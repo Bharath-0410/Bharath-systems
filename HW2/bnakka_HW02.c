@@ -1,16 +1,24 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dirent.h> //This allows us open, read and close directories as it is part of posix library
-#include<stdbool.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <time.h>
+#include <stdio.h> // used to access all the basic functions of c-programming 
+#include <stdlib.h> // used mainly for the memory allocations
+#include <string.h> // used for the string manipulation functions 
+#include <time.h> // used for the time and date functions 
+#include <dirent.h> // used for the directory based operations 
+#include <sys/stat.h> // used to get information about the file attributes 
+#include<stdbool.h> // used to use the bool values true or false 
+#include <unistd.h> // used to use the unix operating system's commands 
+#include <sys/types.h> //used to define the various data types 
 
-#define MAX_PATH_SIZE 2000
 
-char * filetype(unsigned char type) {
+
+
+#define MAX_SIZE_OF_PATH 2000 // define is used to create macros. 
+
+char * filetype(unsigned char type) 
+// here the type refers to directory entry types. 
+{
+// Here DT_* refers to the multiple directory types used to access the filetypes.
+// here the switch statement is used to define the file type entered and then the pointer 
+// string 'str' is used to assign the corresponding value according the switch condition 
   char *str;
   switch(type) {
   case DT_BLK: str = "block device"; break;
@@ -24,53 +32,55 @@ char * filetype(unsigned char type) {
   default: str = "UNKNOWN";
   }
   return str;
+// the str value is returned according to the switch condition 
 }
 
 
-
-void traverseDirectory(char *path, int tabSpaces, bool isDetailsNeeded, int sizeFilter, char *Namefilter, short int depth, bool canShowDirectories, bool canShowFiles) {
+// here we are creating a function which can recursively explore and can get the contnets of the directory. 
+// so the name is given as ExploreDirectory. the inputs for the function are as follows. 
+void ExploreDirectory(char *path, int tabSpaces, bool isDetailsNeeded, int sizeFilter, char *Namefilter, short int depth, bool canShowDirectories, bool canShowFiles) {
     struct dirent *dirent;
-    DIR *parentDir;
+    DIR *parentDirectory;
     struct stat buf;
     bool isFileTypeDirectory=false;
     bool isFileTypeRegular=false;
 
-    // First, we need to open the directory.
-    parentDir = opendir(path);
-    if (parentDir == NULL) { 
+    // First, we need to open the directory. If the path is null an error message is given to the user. 
+    parentDirectory = opendir(path);
+    if (parentDirectory == NULL) { 
         printf ("Error opening directory '%s'\n", path); 
         exit (-1);
-    }
+    } // if the tab space is zero then the output will be the path of the directory. 
     else if(tabSpaces==0){
             printf("%*s %s\n", 4 * tabSpaces, " ", path);
             tabSpaces+=1;
     }
 
-    // After we open the directory, we can read the contents of the directory, file by file.
-    while((dirent = readdir(parentDir)) != NULL){ 
+    // once the directory is opened we can get the contents of the directory by each file.  
+    while((dirent = readdir(parentDirectory)) != NULL){ 
         // If the file's name is "." or "..", ignore them. We do not want to infinitely recurse.
         if (strcmp(dirent->d_name, ".") == 0 || strcmp(dirent->d_name, "..") == 0) {
             continue;
         }
-
+		// this loop is used to determine the current directory entry. 
         if(dirent->d_type == DT_DIR)
-        {
+        { // if the DT_DIR is a directory then isFileTypeDirectory is set to true. 
             isFileTypeDirectory = true;
-            isFileTypeRegular = false;
+            
         }
         else
-        {
+        { // if the DT_DIR is not a directory then isFileTypeRegular is set to true. 
             isFileTypeRegular = true;
-            isFileTypeDirectory = false;
+            
         }
-
+		// here the bool vales are being compared if all are true then the respective if block is being executed. 
         if((canShowFiles && isFileTypeRegular) || (canShowDirectories && isFileTypeDirectory))
         {
-                char *currFilePath = (char *) malloc(MAX_PATH_SIZE);   //getting the path to use that in lstat.
+                char *currFilePath = (char *) malloc(MAX_SIZE_OF_PATH);   //getting the path to use that in lstat.
                 strcpy(currFilePath, path);
                 strcat(currFilePath, "/");
                 strcat(currFilePath, dirent->d_name);
-
+				// this if loop is used to retirve the information about the current file. 
                 if (lstat(currFilePath, &buf) < 0) { 
                     printf("lstat error"); 
                     continue; 
@@ -82,6 +92,7 @@ void traverseDirectory(char *path, int tabSpaces, bool isDetailsNeeded, int size
                     {
                         if(Namefilter == NULL || (strstr(dirent->d_name, Namefilter)))
                         {
+                        	// if the isDetailsNeeded is true then the following if block is being executed. 
                             if(isDetailsNeeded)
                             {
                                 char *lastAccessTime;
@@ -103,24 +114,24 @@ void traverseDirectory(char *path, int tabSpaces, bool isDetailsNeeded, int size
                     }
                 }
         }
-
-        if(canShowDirectories)
+		// if canShowDirectories and isFileTypeDirectory both are true then the following if block is executed. 
+        if(canShowDirectories && isFileTypeDirectory)
         {
-                // Check to see if the file type is a directory. If it is, recursively call traverseDirectory on it.
-            if (isFileTypeDirectory) {
+                // Check to see if the file type is a directory. If it is, recursively call ExploreDirectory on it.
                 // Build the new file path.
-                char *subDirPath = (char *) malloc(MAX_PATH_SIZE);
+                char *subDirPath = (char *) malloc(MAX_SIZE_OF_PATH);
                 strcpy(subDirPath, path);
                 strcat(subDirPath, "/");
                 strcat(subDirPath, dirent->d_name);
-                traverseDirectory(subDirPath, tabSpaces + 1, isDetailsNeeded, sizeFilter, Namefilter, depth, canShowDirectories, canShowFiles);
+                ExploreDirectory(subDirPath, tabSpaces + 1, isDetailsNeeded, sizeFilter, Namefilter, depth, canShowDirectories, canShowFiles);
                 free(subDirPath);
-            }
+            
         }
     } 
-    closedir(parentDir);
+    // here we are closing the directory. 
+    closedir(parentDirectory);
 }
-
+// main block is being started. 
 int main(int argc, char **argv) {
     int tabSpaces = 0, sizeFilter = -1;
     bool isDetailsNeeded = false, canShowDirectories = true, canShowFiles = true;
@@ -129,15 +140,17 @@ int main(int argc, char **argv) {
     char *path = NULL;
 
     // Check to see if the user provides at least 2 command-line-arguments.
+    // this loop is for the argc value is 0 
     if (argc < 1) { 
         printf ("Usage: %s <dirname>\n", argv[0]); 
         exit(-1);
     }
+    // this loop is for the argc value is 1
     else if(argc == 1)
     {
         //if no directory is given, print the current directory.
         path = ".";
-    }
+    } // this loop is for the argc value is greater than 2. 
     else
     {
         for (int argIndex = 1; argIndex < argc; argIndex++)
@@ -168,11 +181,12 @@ int main(int argc, char **argv) {
             }
         }
     }
-
+	// this block is excecuted if the path is null 
     if (path == NULL)
     {
         path = ".";
     }
-    traverseDirectory(path, tabSpaces, isDetailsNeeded, sizeFilter, Namefilter, depth, canShowDirectories, canShowFiles);
+    // calling the function ExploreDirectory 
+    ExploreDirectory(path, tabSpaces, isDetailsNeeded, sizeFilter, Namefilter, depth, canShowDirectories, canShowFiles);
     return 0;
 }
