@@ -1,10 +1,4 @@
-Lab Assignment 1
-
-For Compilation: Use “gcc -o lab6 lab06.c”
-
-For Running: Use “./lab6”
-
-GITHUB Link: Lab Assignment 1
+Lab Assignment 6
 
 For Compilation: Use “gcc -o lab 01 lab 01.c”
 
