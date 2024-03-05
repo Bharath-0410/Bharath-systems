@@ -3,7 +3,7 @@
 ## Date: 3/4/24
 
 # Compilation Instructions
-
+github link:https://github.com/Bharath-0410/Bharath-systems/tree/main/HW3
 gcc -o h hw3.c  // used to compile the code. 
 ./h to check the basic functionality 
 
