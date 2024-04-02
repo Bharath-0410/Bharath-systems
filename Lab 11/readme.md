@@ -1,6 +1,9 @@
 to compile: gcc -pthread lab11.c -o lab11
+
 to run: ./lab11 1000000 4 
 
+
+github repo link:  https://github.com/Bharath-0410/Bharath-systems/tree/main/Lab%2011
 
 
 1. **Headers**:
