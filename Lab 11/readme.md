@@ -1,9 +1,9 @@
 to compile: gcc -pthread lab11.c -o lab11
 to run: ./lab11 1000000 4 
 
-Certainly! Let's break down the provided code:
 
-1. **Headers Included**:
+
+1. **Headers**:
    - `#include <stdio.h>`: Includes standard input-output functions.
    - `#include <stdlib.h>`: Includes standard library functions like memory allocation and conversion functions.
    - `#include <pthread.h>`: Includes POSIX threads library for multithreading.
