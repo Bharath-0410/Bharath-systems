@@ -6,6 +6,11 @@ for running
 
 ./lab
 
+
+
+github link:  https://github.com/Bharath-0410/Bharath-systems/tree/main/Lab%2012
+
+
 ==========================================================================================
 
 the following are the variables used in the given code. 
