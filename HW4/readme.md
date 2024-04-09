@@ -7,7 +7,7 @@ for running
 ./hw 2 
 
 
-github link: 
+github link: https://github.com/Bharath-0410/Bharath-systems/tree/main/HW4
 
 
 
