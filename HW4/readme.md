@@ -11,6 +11,9 @@ github link: https://github.com/Bharath-0410/Bharath-systems/tree/main/HW4
 
 
 
+here we are adding the example code to add the jobs of the main code where they are stored in the compiled file. 
+
+
 
 1. `jobs`: Array of structures to store information about jobs.
 2. `job_id`: Integer variable representing the ID of a job.
